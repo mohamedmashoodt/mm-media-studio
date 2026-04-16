@@ -1,0 +1,2239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MM Media Studio Pro - Ultimate Media Processing Suite</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #C3073F;
+            --primary-dark: #950740;
+            --secondary: #1A1A2E;
+            --accent: #0F3460;
+            --bg-dark: #0A0A0B;
+            --card-bg: #16161A;
+            --text-light: #E4E4E7;
+            --text-dim: #A1A1AA;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --error: #EF4444;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0A0A0B 0%, #1A1A2E 100%);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 20s infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) translateX(0); }
+            25% { transform: translateY(-100px) translateX(50px); }
+            50% { transform: translateY(-200px) translateX(-50px); }
+            75% { transform: translateY(-100px) translateX(100px); }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: rgba(22, 22, 26, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            animation: scan 3s infinite;
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .logo {
+            font-size: 60px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 20px var(--primary));
+        }
+
+        .header h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            font-weight: 600;
+            letter-spacing: 3px;
+        }
+
+        /* Tool Grid */
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .tool-card {
+            background: rgba(22, 22, 26, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tool-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 40px rgba(195, 7, 63, 0.3);
+        }
+
+        .tool-card:hover::before {
+            opacity: 0.1;
+        }
+
+        .tool-card.active {
+            border-color: var(--primary);
+            background: rgba(195, 7, 63, 0.1);
+        }
+
+        .tool-icon {
+            font-size: 40px;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .tool-card h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            color: #fff;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tool-card p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            line-height: 1.5;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Workspace */
+        .workspace {
+            background: rgba(22, 22, 26, 0.8);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 500px;
+            display: none;
+        }
+
+        .workspace.active {
+            display: block;
+            animation: slideIn 0.4s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .workspace-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .workspace-header h2 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 10px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateX(-5px);
+        }
+
+        /* Drop Zone */
+        .drop-zone {
+            border: 3px dashed rgba(195, 7, 63, 0.4);
+            border-radius: 15px;
+            padding: 60px 20px;
+            text-align: center;
+            background: rgba(10, 10, 11, 0.5);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin-bottom: 30px;
+        }
+
+        .drop-zone:hover,
+        .drop-zone.dragover {
+            border-color: var(--primary);
+            background: rgba(195, 7, 63, 0.1);
+            transform: scale(1.02);
+        }
+
+        .drop-zone-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .drop-zone h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        .drop-zone p {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+        }
+
+        /* Controls */
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-group {
+            background: rgba(10, 10, 11, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .control-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-dim);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .control-group input,
+        .control-group select {
+            width: 100%;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .control-group input:focus,
+        .control-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Buttons */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.5s ease;
+        }
+
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(195, 7, 63, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Preview Grid */
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .preview-item {
+            background: rgba(10, 10, 11, 0.7);
+            border-radius: 10px;
+            padding: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        .preview-item .filename {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .preview-item .remove-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: var(--error);
+            color: #fff;
+            border: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .preview-item .remove-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        /* Progress */
+        .progress-container {
+            margin: 30px 0;
+            display: none;
+        }
+
+        .progress-container.active {
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--success) 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+            padding: 30px;
+            background: rgba(22, 22, 26, 0.6);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .footer-divider {
+            width: 100px;
+            height: 2px;
+            background: var(--primary);
+            margin: 20px auto;
+        }
+
+        .footer-brand {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .footer-contact {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+        }
+
+        .footer-copyright {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            margin-top: 15px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-dark);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .tools-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .workspace {
+                padding: 20px;
+            }
+
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Slider Styles */
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+        }
+
+        .slider-value {
+            display: inline-block;
+            background: var(--primary);
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+
+        /* Canvas Preview */
+        #canvas-preview {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            margin: 20px 0;
+            display: none;
+        }
+
+        #canvas-preview.active {
+            display: block;
+        }
+
+        /* Filter Buttons */
+        .filter-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filter-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .filter-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="particles" id="particles"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">💠</div>
+            <h1>MM MEDIA STUDIO PRO</h1>
+            <p>PROFESSIONAL MEDIA PROCESSING SUITE</p>
+        </div>
+
+        <!-- Tools Grid -->
+        <div class="tools-grid" id="toolsGrid">
+            <div class="tool-card" data-tool="compress">
+                <span class="tool-icon">🗜️</span>
+                <h3>Smart Compress</h3>
+                <p>Compress images & PDFs to target size with quality optimization</p>
+            </div>
+
+            <div class="tool-card" data-tool="resize">
+                <span class="tool-icon">📐</span>
+                <h3>Image Resizer</h3>
+                <p>Resize images with custom dimensions or preset ratios</p>
+            </div>
+
+            <div class="tool-card" data-tool="convert">
+                <span class="tool-icon">🔄</span>
+                <h3>Format Converter</h3>
+                <p>Convert between JPG, PNG, WebP formats instantly</p>
+            </div>
+
+            <div class="tool-card" data-tool="pdf-merge">
+                <span class="tool-icon">📑</span>
+                <h3>PDF Tools</h3>
+                <p>Merge images to PDF or split PDF to images</p>
+            </div>
+
+            <div class="tool-card" data-tool="watermark">
+                <span class="tool-icon">©️</span>
+                <h3>Watermark</h3>
+                <p>Add text or image watermarks to protect your content</p>
+            </div>
+
+            <div class="tool-card" data-tool="crop">
+                <span class="tool-icon">✂️</span>
+                <h3>Smart Crop</h3>
+                <p>Crop images with preset aspect ratios (1:1, 16:9, 4:3)</p>
+            </div>
+
+            <div class="tool-card" data-tool="filters">
+                <span class="tool-icon">🎨</span>
+                <h3>Filters & Effects</h3>
+                <p>Apply filters: B&W, Sepia, Brightness, Contrast adjustments</p>
+            </div>
+
+            <div class="tool-card" data-tool="passport">
+                <span class="tool-icon">🖼️</span>
+                <h3>Passport Photo</h3>
+                <p>Create passport photos with preset sizes (India, US, UK)</p>
+            </div>
+
+            <div class="tool-card" data-tool="qr">
+                <span class="tool-icon">📱</span>
+                <h3>QR Generator</h3>
+                <p>Generate QR codes for URLs, text, contacts, WiFi</p>
+            </div>
+
+            <div class="tool-card" data-tool="editor">
+                <span class="tool-icon">✏️</span>
+                <h3>Canvas Editor</h3>
+                <p>Rotate, flip, and apply real-time effects to images</p>
+            </div>
+
+            <div class="tool-card" data-tool="metadata">
+                <span class="tool-icon">🔒</span>
+                <h3>EXIF Remover</h3>
+                <p>Remove metadata and privacy information from images</p>
+            </div>
+
+            <div class="tool-card" data-tool="collage">
+                <span class="tool-icon">🖼️</span>
+                <h3>Photo Collage</h3>
+                <p>Create beautiful collages from multiple images</p>
+            </div>
+        </div>
+
+        <!-- Workspace (Hidden by default) -->
+        <div class="workspace" id="workspace">
+            <div class="workspace-header">
+                <h2>
+                    <span id="workspaceIcon">🗜️</span>
+                    <span id="workspaceTitle">Tool Name</span>
+                </h2>
+                <button class="back-btn" onclick="backToTools()">← Back to Tools</button>
+            </div>
+
+            <div id="workspaceContent">
+                <!-- Dynamic content will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-divider"></div>
+            <div class="footer-brand">🛡️ MM CREATIVES</div>
+            <div class="footer-contact">Mohamed Mashood | mohamedmashoodt@gmail.com</div>
+            <div class="footer-copyright">© 2024-2026 MM Creatives. All Rights Reserved.</div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        // Create animated particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.top = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 20 + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Global variables
+        let selectedFiles = [];
+        let currentTool = '';
+
+        // Tool card click handlers
+        document.querySelectorAll('.tool-card').forEach(card => {
+            card.addEventListener('click', function() {
+                const tool = this.dataset.tool;
+                openTool(tool);
+            });
+        });
+
+        function openTool(tool) {
+            currentTool = tool;
+            selectedFiles = [];
+            
+            const workspace = document.getElementById('workspace');
+            const toolsGrid = document.getElementById('toolsGrid');
+            const workspaceTitle = document.getElementById('workspaceTitle');
+            const workspaceIcon = document.getElementById('workspaceIcon');
+            const workspaceContent = document.getElementById('workspaceContent');
+
+            // Hide tools grid, show workspace
+            toolsGrid.style.display = 'none';
+            workspace.classList.add('active');
+
+            // Update header
+            const toolData = {
+                'compress': { title: 'Smart Compress', icon: '🗜️' },
+                'resize': { title: 'Image Resizer', icon: '📐' },
+                'convert': { title: 'Format Converter', icon: '🔄' },
+                'pdf-merge': { title: 'PDF Tools', icon: '📑' },
+                'watermark': { title: 'Watermark', icon: '©️' },
+                'crop': { title: 'Smart Crop', icon: '✂️' },
+                'filters': { title: 'Filters & Effects', icon: '🎨' },
+                'passport': { title: 'Passport Photo', icon: '🖼️' },
+                'qr': { title: 'QR Generator', icon: '📱' },
+                'editor': { title: 'Canvas Editor', icon: '✏️' },
+                'metadata': { title: 'EXIF Remover', icon: '🔒' },
+                'collage': { title: 'Photo Collage', icon: '🖼️' }
+            };
+
+            workspaceTitle.textContent = toolData[tool].title;
+            workspaceIcon.textContent = toolData[tool].icon;
+
+            // Load tool interface
+            loadToolInterface(tool, workspaceContent);
+        }
+
+        function backToTools() {
+            document.getElementById('workspace').classList.remove('active');
+            document.getElementById('toolsGrid').style.display = 'grid';
+            selectedFiles = [];
+        }
+
+        function loadToolInterface(tool, container) {
+            const interfaces = {
+                'compress': createCompressInterface,
+                'resize': createResizeInterface,
+                'convert': createConvertInterface,
+                'pdf-merge': createPDFInterface,
+                'watermark': createWatermarkInterface,
+                'crop': createCropInterface,
+                'filters': createFiltersInterface,
+                'passport': createPassportInterface,
+                'qr': createQRInterface,
+                'editor': createEditorInterface,
+                'metadata': createMetadataInterface,
+                'collage': createCollageInterface
+            };
+
+            if (interfaces[tool]) {
+                interfaces[tool](container);
+            }
+        }
+
+        // ============================================
+        // COMPRESS TOOL
+        // ============================================
+        function createCompressInterface(container) {
+            container.innerHTML = `
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📁</div>
+                    <h3>Drop files here or click to browse</h3>
+                    <p>Supports: JPG, PNG, PDF (Multiple files allowed)</p>
+                    <input type="file" id="fileInput" accept="image/*,.pdf" multiple style="display:none;">
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Target Size (MB)</label>
+                        <input type="number" id="targetSize" value="0.5" step="0.1" min="0.1">
+                    </div>
+                    <div class="control-group">
+                        <label>Quality (%)</label>
+                        <input type="range" id="quality" min="10" max="100" value="75">
+                        <span class="slider-value" id="qualityValue">75%</span>
+                    </div>
+                </div>
+
+                <div class="preview-grid" id="previewGrid"></div>
+
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">Processing...</div>
+                </div>
+
+                <button class="btn-primary" id="processBtn" onclick="processCompress()" disabled>
+                    ⚡ Compress Files
+                </button>
+            `;
+
+            setupFileUpload();
+            
+            document.getElementById('quality').addEventListener('input', function() {
+                document.getElementById('qualityValue').textContent = this.value + '%';
+            });
+        }
+
+        async function processCompress() {
+            const targetSize = parseFloat(document.getElementById('targetSize').value) * 1024 * 1024;
+            const quality = parseInt(document.getElementById('quality').value) / 100;
+            
+            showProgress(true);
+            
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                updateProgress((i / selectedFiles.length) * 100, `Processing ${file.name}...`);
+                
+                if (file.type.includes('pdf')) {
+                    await compressPDF(file, targetSize);
+                } else {
+                    await compressImage(file, targetSize, quality);
+                }
+            }
+            
+            updateProgress(100, 'Complete! Files saved.');
+            setTimeout(() => showProgress(false), 2000);
+        }
+
+        async function compressImage(file, targetSize, quality) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        
+                        // Compress with quality
+                        canvas.toBlob(function(blob) {
+                            downloadFile(blob, file.name.replace(/\.[^/.]+$/, '.jpg'));
+                            resolve();
+                        }, 'image/jpeg', quality);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function compressPDF(file, targetSize) {
+            // Simplified PDF compression (convert to images and recreate)
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                // For this demo, we'll just re-save the PDF
+                // In production, use pdf-lib for actual compression
+                downloadFile(file, file.name);
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        // ============================================
+        // RESIZE TOOL
+        // ============================================
+        function createResizeInterface(container) {
+            container.innerHTML = `
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📁</div>
+                    <h3>Drop images here or click to browse</h3>
+                    <p>Supports: JPG, PNG (Multiple files allowed)</p>
+                    <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Width (px)</label>
+                        <input type="number" id="resizeWidth" value="1920" min="1">
+                    </div>
+                    <div class="control-group">
+                        <label>Height (px)</label>
+                        <input type="number" id="resizeHeight" value="1080" min="1">
+                    </div>
+                    <div class="control-group">
+                        <label>Maintain Aspect Ratio</label>
+                        <select id="aspectRatio">
+                            <option value="none">Custom</option>
+                            <option value="1:1">1:1 (Square)</option>
+                            <option value="16:9">16:9 (Widescreen)</option>
+                            <option value="4:3">4:3 (Standard)</option>
+                            <option value="3:2">3:2 (Photo)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="preview-grid" id="previewGrid"></div>
+
+                <button class="btn-primary" id="processBtn" onclick="processResize()" disabled>
+                    📐 Resize Images
+                </button>
+            `;
+
+            setupFileUpload();
+
+            document.getElementById('aspectRatio').addEventListener('change', function() {
+                if (this.value !== 'none') {
+                    const [w, h] = this.value.split(':');
+                    const currentWidth = parseInt(document.getElementById('resizeWidth').value);
+                    document.getElementById('resizeHeight').value = Math.round(currentWidth * h / w);
+                }
+            });
+        }
+
+        async function processResize() {
+            const width = parseInt(document.getElementById('resizeWidth').value);
+            const height = parseInt(document.getElementById('resizeHeight').value);
+            
+            for (const file of selectedFiles) {
+                await resizeImage(file, width, height);
+            }
+        }
+
+        async function resizeImage(file, width, height) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        canvas.toBlob(function(blob) {
+                            downloadFile(blob, file.name.replace(/\.[^/.]+$/, '_resized.jpg'));
+                            resolve();
+                        }, 'image/jpeg', 0.92);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ============================================
+        // CONVERT TOOL
+        // ============================================
+        function createConvertInterface(container) {
+            container.innerHTML = `
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📁</div>
+                    <h3>Drop images here or click to browse</h3>
+                    <p>Supports: JPG, PNG, WebP (Multiple files allowed)</p>
+                    <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Convert To</label>
+                        <select id="convertFormat">
+                            <option value="jpeg">JPG</option>
+                            <option value="png">PNG</option>
+                            <option value="webp">WebP</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Quality (%)</label>
+                        <input type="range" id="convertQuality" min="10" max="100" value="90">
+                        <span class="slider-value" id="convertQualityValue">90%</span>
+                    </div>
+                </div>
+
+                <div class="preview-grid" id="previewGrid"></div>
+
+                <button class="btn-primary" id="processBtn" onclick="processConvert()" disabled>
+                    🔄 Convert Images
+                </button>
+            `;
+
+            setupFileUpload();
+            
+            document.getElementById('convertQuality').addEventListener('input', function() {
+                document.getElementById('convertQualityValue').textContent = this.value + '%';
+            });
+        }
+
+        async function processConvert() {
+            const format = document.getElementById('convertFormat').value;
+            const quality = parseInt(document.getElementById('convertQuality').value) / 100;
+            
+            for (const file of selectedFiles) {
+                await convertImage(file, format, quality);
+            }
+        }
+
+        async function convertImage(file, format, quality) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        
+                        const mimeType = `image/${format}`;
+                        const extension = format === 'jpeg' ? 'jpg' : format;
+                        
+                        canvas.toBlob(function(blob) {
+                            downloadFile(blob, file.name.replace(/\.[^/.]+$/, `.${extension}`));
+                            resolve();
+                        }, mimeType, quality);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ============================================
+        // PDF TOOLS
+        // ============================================
+        function createPDFInterface(container) {
+            container.innerHTML = `
+                <div class="controls" style="margin-bottom: 30px;">
+                    <div class="control-group">
+                        <label>PDF Operation</label>
+                        <select id="pdfOperation" onchange="updatePDFInterface()">
+                            <option value="images-to-pdf">Images to PDF</option>
+                            <option value="pdf-to-images">PDF to Images</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="pdfWorkspace">
+                    <!-- Dynamic content -->
+                </div>
+            `;
+
+            updatePDFInterface();
+        }
+
+        function updatePDFInterface() {
+            const operation = document.getElementById('pdfOperation').value;
+            const workspace = document.getElementById('pdfWorkspace');
+
+            if (operation === 'images-to-pdf') {
+                workspace.innerHTML = `
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-zone-icon">📁</div>
+                        <h3>Drop images here or click to browse</h3>
+                        <p>Supports: JPG, PNG (Multiple files - will be merged in order)</p>
+                        <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
+                    </div>
+
+                    <div class="preview-grid" id="previewGrid"></div>
+
+                    <button class="btn-primary" id="processBtn" onclick="imagesToPDF()" disabled>
+                        📑 Create PDF
+                    </button>
+                `;
+                setupFileUpload();
+            } else {
+                workspace.innerHTML = `
+                    <div class="drop-zone" id="dropZone">
+                        <div class="drop-zone-icon">📁</div>
+                        <h3>Drop PDF file here or click to browse</h3>
+                        <p>Supports: PDF (Single file)</p>
+                        <input type="file" id="fileInput" accept=".pdf" style="display:none;">
+                    </div>
+
+                    <button class="btn-primary" id="processBtn" onclick="pdfToImages()" disabled>
+                        🖼️ Extract Images
+                    </button>
+                `;
+                setupFileUpload();
+            }
+        }
+
+        async function imagesToPDF() {
+            const { PDFDocument } = PDFLib;
+            const pdfDoc = await PDFDocument.create();
+
+            for (const file of selectedFiles) {
+                const imageBytes = await file.arrayBuffer();
+                let image;
+                
+                if (file.type === 'image/png') {
+                    image = await pdfDoc.embedPng(imageBytes);
+                } else {
+                    image = await pdfDoc.embedJpg(imageBytes);
+                }
+
+                const page = pdfDoc.addPage([image.width, image.height]);
+                page.drawImage(image, {
+                    x: 0,
+                    y: 0,
+                    width: image.width,
+                    height: image.height,
+                });
+            }
+
+            const pdfBytes = await pdfDoc.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            downloadFile(blob, 'merged_images.pdf');
+        }
+
+        async function pdfToImages() {
+            // Note: PDF to images requires a more complex library
+            // This is a placeholder - in production, use PDF.js
+            alert('PDF to Images conversion requires additional libraries. This is a demo placeholder.');
+        }
+
+        // ============================================
+        // WATERMARK TOOL
+        // ============================================
+        function createWatermarkInterface(container) {
+            container.innerHTML = `
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📁</div>
+                    <h3>Drop images here or click to browse</h3>
+                    <p>Supports: JPG, PNG (Multiple files allowed)</p>
+                    <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Watermark Type</label>
+                        <select id="watermarkType" onchange="updateWatermarkOptions()">
+                            <option value="text">Text</option>
+                            <option value="image">Image</option>
+                        </select>
+                    </div>
+                    <div class="control-group" id="textWatermarkOptions">
+                        <label>Watermark Text</label>
+                        <input type="text" id="watermarkText" placeholder="© MM Creatives 2026">
+                    </div>
+                    <div class="control-group" style="display:none;" id="imageWatermarkOptions">
+                        <label>Watermark Logo</label>
+                        <input type="file" id="watermarkImage" accept="image/*">
+                    </div>
+                    <div class="control-group">
+                        <label>Position</label>
+                        <select id="watermarkPosition">
+                            <option value="bottom-right">Bottom Right</option>
+                            <option value="bottom-left">Bottom Left</option>
+                            <option value="top-right">Top Right</option>
+                            <option value="top-left">Top Left</option>
+                            <option value="center">Center</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Opacity (%)</label>
+                        <input type="range" id="watermarkOpacity" min="10" max="100" value="50">
+                        <span class="slider-value" id="watermarkOpacityValue">50%</span>
+                    </div>
+                </div>
+
+                <div class="preview-grid" id="previewGrid"></div>
+
+                <button class="btn-primary" id="processBtn" onclick="processWatermark()" disabled>
+                    ©️ Apply Watermark
+                </button>
+            `;
+
+            setupFileUpload();
+            
+            document.getElementById('watermarkOpacity').addEventListener('input', function() {
+                document.getElementById('watermarkOpacityValue').textContent = this.value + '%';
+            });
+        }
+
+        function updateWatermarkOptions() {
+            const type = document.getElementById('watermarkType').value;
+            document.getElementById('textWatermarkOptions').style.display = type === 'text' ? 'block' : 'none';
+            document.getElementById('imageWatermarkOptions').style.display = type === 'image' ? 'block' : 'none';
+        }
+
+        async function processWatermark() {
+            const type = document.getElementById('watermarkType').value;
+            const position = document.getElementById('watermarkPosition').value;
+            const opacity = parseInt(document.getElementById('watermarkOpacity').value) / 100;
+
+            for (const file of selectedFiles) {
+                if (type === 'text') {
+                    const text = document.getElementById('watermarkText').value || '© MM Creatives';
+                    await addTextWatermark(file, text, position, opacity);
+                } else {
+                    const logoInput = document.getElementById('watermarkImage');
+                    if (logoInput.files.length > 0) {
+                        await addImageWatermark(file, logoInput.files[0], position, opacity);
+                    }
+                }
+            }
+        }
+
+        async function addTextWatermark(file, text, position, opacity) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        
+                        // Set text properties
+                        ctx.globalAlpha = opacity;
+                        ctx.fillStyle = 'white';
+                        ctx.font = `${img.width * 0.03}px Montserrat`;
+                        ctx.shadowColor = 'rgba(0,0,0,0.5)';
+                        ctx.shadowBlur = 10;
+                        
+                        const metrics = ctx.measureText(text);
+                        let x, y;
+                        
+                        switch(position) {
+                            case 'bottom-right':
+                                x = img.width - metrics.width - 30;
+                                y = img.height - 30;
+                                break;
+                            case 'bottom-left':
+                                x = 30;
+                                y = img.height - 30;
+                                break;
+                            case 'top-right':
+                                x = img.width - metrics.width - 30;
+                                y = 50;
+                                break;
+                            case 'top-left':
+                                x = 30;
+                                y = 50;
+                                break;
+                            case 'center':
+                                x = (img.width - metrics.width) / 2;
+                                y = img.height / 2;
+                                break;
+                        }
+                        
+                        ctx.fillText(text, x, y);
+                        
+                        canvas.toBlob(function(blob) {
+                            downloadFile(blob, file.name.replace(/\.[^/.]+$/, '_watermarked.jpg'));
+                            resolve();
+                        }, 'image/jpeg', 0.95);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        async function addImageWatermark(file, logoFile, position, opacity) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const logoReader = new FileReader();
+                        logoReader.onload = function(le) {
+                            const logo = new Image();
+                            logo.onload = function() {
+                                const canvas = document.createElement('canvas');
+                                canvas.width = img.width;
+                                canvas.height = img.height;
+                                
+                                const ctx = canvas.getContext('2d');
+                                ctx.drawImage(img, 0, 0);
+                                
+                                // Scale logo to 15% of image width
+                                const logoWidth = img.width * 0.15;
+                                const logoHeight = (logo.height / logo.width) * logoWidth;
+                                
+                                ctx.globalAlpha = opacity;
+                                
+                                let x, y;
+                                switch(position) {
+                                    case 'bottom-right':
+                                        x = img.width - logoWidth - 20;
+                                        y = img.height - logoHeight - 20;
+                                        break;
+                                    case 'bottom-left':
+                                        x = 20;
+                                        y = img.height - logoHeight - 20;
+                                        break;
+                                    case 'top-right':
+                                        x = img.width - logoWidth - 20;
+                                        y = 20;
+                                        break;
+                                    case 'top-left':
+                                        x = 20;
+                                        y = 20;
+                                        break;
+                                    case 'center':
+                                        x = (img.width - logoWidth) / 2;
+                                        y = (img.height - logoHeight) / 2;
+                                        break;
+                                }
+                                
+                                ctx.drawImage(logo, x, y, logoWidth, logoHeight);
+                                
+                                canvas.toBlob(function(blob) {
+                                    downloadFile(blob, file.name.replace(/\.[^/.]+$/, '_watermarked.jpg'));
+                                    resolve();
+                                }, 'image/jpeg', 0.95);
+                            };
+                            logo.src = le.target.result;
+                        };
+                        logoReader.readAsDataURL(logoFile);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ============================================
+        // CROP TOOL
+        // ============================================
+        function createCropInterface(container) {
+            container.innerHTML = `
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📁</div>
+                    <h3>Drop an image here or click to browse</h3>
+                    <p>Supports: JPG, PNG (Single file)</p>
+                    <input type="file" id="fileInput" accept="image/*" style="display:none;">
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Aspect Ratio</label>
+                        <select id="cropRatio" onchange="applyCropRatio()">
+                            <option value="free">Free Crop</option>
+                            <option value="1:1">1:1 (Square)</option>
+                            <option value="16:9">16:9 (Widescreen)</option>
+                            <option value="4:3">4:3 (Standard)</option>
+                            <option value="3:2">3:2 (Photo)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <canvas id="canvas-preview" class="active"></canvas>
+
+                <div style="margin-top: 20px; color: var(--text-dim); text-align: center;">
+                    <p>⚠️ Interactive crop coming in next update. Current version applies ratio-based center crop.</p>
+                </div>
+
+                <button class="btn-primary" id="processBtn" onclick="processCrop()" disabled>
+                    ✂️ Crop Image
+                </button>
+            `;
+
+            setupFileUpload();
+        }
+
+        function applyCropRatio() {
+            // Preview would update here with crop overlay
+        }
+
+        async function processCrop() {
+            const ratio = document.getElementById('cropRatio').value;
+            const file = selectedFiles[0];
+            
+            await cropImage(file, ratio);
+        }
+
+        async function cropImage(file, ratio) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        let cropWidth = img.width;
+                        let cropHeight = img.height;
+                        
+                        if (ratio !== 'free') {
+                            const [w, h] = ratio.split(':').map(Number);
+                            const targetRatio = w / h;
+                            const currentRatio = img.width / img.height;
+                            
+                            if (currentRatio > targetRatio) {
+                                cropWidth = img.height * targetRatio;
+                            } else {
+                                cropHeight = img.width / targetRatio;
+                            }
+                        }
+                        
+                        const canvas = document.createElement('canvas');
+                        canvas.width = cropWidth;
+                        canvas.height = cropHeight;
+                        
+                        const ctx = canvas.getContext('2d');
+                        const x = (img.width - cropWidth) / 2;
+                        const y = (img.height - cropHeight) / 2;
+                        
+                        ctx.drawImage(img, x, y, cropWidth, cropHeight, 0, 0, cropWidth, cropHeight);
+                        
+                        canvas.toBlob(function(blob) {
+                            downloadFile(blob, file.name.replace(/\.[^/.]+$/, '_cropped.jpg'));
+                            resolve();
+                        }, 'image/jpeg', 0.95);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ============================================
+        // FILTERS TOOL
+        // ============================================
+        function createFiltersInterface(container) {
+            container.innerHTML = `
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📁</div>
+                    <h3>Drop an image here or click to browse</h3>
+                    <p>Supports: JPG, PNG (Single file for live preview)</p>
+                    <input type="file" id="fileInput" accept="image/*" style="display:none;">
+                </div>
+
+                <div class="filter-buttons" id="filterButtons" style="display:none;">
+                    <button class="filter-btn" onclick="applyFilter('none')">Original</button>
+                    <button class="filter-btn" onclick="applyFilter('grayscale')">B&W</button>
+                    <button class="filter-btn" onclick="applyFilter('sepia')">Sepia</button>
+                    <button class="filter-btn" onclick="applyFilter('invert')">Invert</button>
+                    <button class="filter-btn" onclick="applyFilter('blur')">Blur</button>
+                </div>
+
+                <div class="controls" id="filterControls" style="display:none;">
+                    <div class="control-group">
+                        <label>Brightness</label>
+                        <input type="range" id="brightness" min="0" max="200" value="100" oninput="updateFilters()">
+                        <span class="slider-value" id="brightnessValue">100%</span>
+                    </div>
+                    <div class="control-group">
+                        <label>Contrast</label>
+                        <input type="range" id="contrast" min="0" max="200" value="100" oninput="updateFilters()">
+                        <span class="slider-value" id="contrastValue">100%</span>
+                    </div>
+                    <div class="control-group">
+                        <label>Saturation</label>
+                        <input type="range" id="saturation" min="0" max="200" value="100" oninput="updateFilters()">
+                        <span class="slider-value" id="saturationValue">100%</span>
+                    </div>
+                </div>
+
+                <canvas id="canvas-preview"></canvas>
+
+                <button class="btn-primary" id="processBtn" onclick="saveFilteredImage()" disabled style="display:none;">
+                    💾 Save Edited Image
+                </button>
+            `;
+
+            setupFileUpload();
+        }
+
+        let filterCanvas = null;
+        let filterCtx = null;
+        let originalImage = null;
+        let currentFilter = 'none';
+
+        function loadImageForFilters(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    originalImage = img;
+                    filterCanvas = document.getElementById('canvas-preview');
+                    filterCtx = filterCanvas.getContext('2d');
+                    
+                    filterCanvas.width = img.width;
+                    filterCanvas.height = img.height;
+                    filterCanvas.classList.add('active');
+                    
+                    filterCtx.drawImage(img, 0, 0);
+                    
+                    document.getElementById('filterButtons').style.display = 'flex';
+                    document.getElementById('filterControls').style.display = 'grid';
+                    document.getElementById('processBtn').style.display = 'block';
+                    document.getElementById('processBtn').disabled = false;
+                    
+                    updateFilters();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function applyFilter(filter) {
+            currentFilter = filter;
+            updateFilters();
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+
+        function updateFilters() {
+            if (!originalImage || !filterCtx) return;
+            
+            filterCtx.clearRect(0, 0, filterCanvas.width, filterCanvas.height);
+            filterCtx.filter = 'none';
+            filterCtx.drawImage(originalImage, 0, 0);
+            
+            const brightness = document.getElementById('brightness').value;
+            const contrast = document.getElementById('contrast').value;
+            const saturation = document.getElementById('saturation').value;
+            
+            document.getElementById('brightnessValue').textContent = brightness + '%';
+            document.getElementById('contrastValue').textContent = contrast + '%';
+            document.getElementById('saturationValue').textContent = saturation + '%';
+            
+            let filterString = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
+            
+            switch(currentFilter) {
+                case 'grayscale':
+                    filterString += ' grayscale(100%)';
+                    break;
+                case 'sepia':
+                    filterString += ' sepia(100%)';
+                    break;
+                case 'invert':
+                    filterString += ' invert(100%)';
+                    break;
+                case 'blur':
+                    filterString += ' blur(5px)';
+                    break;
+            }
+            
+            filterCtx.filter = filterString;
+            filterCtx.drawImage(originalImage, 0, 0);
+        }
+
+        function saveFilteredImage() {
+            filterCanvas.toBlob(function(blob) {
+                downloadFile(blob, selectedFiles[0].name.replace(/\.[^/.]+$/, '_filtered.jpg'));
+            }, 'image/jpeg', 0.95);
+        }
+
+        // ============================================
+        // PASSPORT PHOTO TOOL
+        // ============================================
+        function createPassportInterface(container) {
+            container.innerHTML = `
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📁</div>
+                    <h3>Drop a photo here or click to browse</h3>
+                    <p>Supports: JPG, PNG</p>
+                    <input type="file" id="fileInput" accept="image/*" style="display:none;">
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Passport Size</label>
+                        <select id="passportSize">
+                            <option value="india">India (35x45mm / 413x531px)</option>
+                            <option value="usa">USA (2x2 inch / 600x600px)</option>
+                            <option value="uk">UK (35x45mm / 413x531px)</option>
+                            <option value="eu">EU/Schengen (35x45mm / 413x531px)</option>
+                            <option value="custom">Custom Size</option>
+                        </select>
+                    </div>
+                    <div class="control-group" id="customSizeInputs" style="display:none;">
+                        <label>Width (px)</label>
+                        <input type="number" id="customWidth" value="413">
+                        <label>Height (px)</label>
+                        <input type="number" id="customHeight" value="531">
+                    </div>
+                </div>
+
+                <canvas id="canvas-preview"></canvas>
+
+                <button class="btn-primary" id="processBtn" onclick="createPassportPhoto()" disabled>
+                    🖼️ Create Passport Photo
+                </button>
+            `;
+
+            setupFileUpload();
+            
+            document.getElementById('passportSize').addEventListener('change', function() {
+                document.getElementById('customSizeInputs').style.display = 
+                    this.value === 'custom' ? 'block' : 'none';
+            });
+        }
+
+        async function createPassportPhoto() {
+            const sizePreset = document.getElementById('passportSize').value;
+            const file = selectedFiles[0];
+            
+            const sizes = {
+                'india': { width: 413, height: 531 },
+                'usa': { width: 600, height: 600 },
+                'uk': { width: 413, height: 531 },
+                'eu': { width: 413, height: 531 },
+                'custom': {
+                    width: parseInt(document.getElementById('customWidth').value),
+                    height: parseInt(document.getElementById('customHeight').value)
+                }
+            };
+            
+            const { width, height } = sizes[sizePreset];
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Fill white background
+                    ctx.fillStyle = '#FFFFFF';
+                    ctx.fillRect(0, 0, width, height);
+                    
+                    // Calculate scaling to fit image
+                    const scale = Math.max(width / img.width, height / img.height);
+                    const scaledWidth = img.width * scale;
+                    const scaledHeight = img.height * scale;
+                    const x = (width - scaledWidth) / 2;
+                    const y = (height - scaledHeight) / 2;
+                    
+                    ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+                    
+                    canvas.toBlob(function(blob) {
+                        downloadFile(blob, file.name.replace(/\.[^/.]+$/, '_passport.jpg'));
+                    }, 'image/jpeg', 0.95);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ============================================
+        // QR CODE GENERATOR
+        // ============================================
+        function createQRInterface(container) {
+            container.innerHTML = `
+                <div class="controls">
+                    <div class="control-group">
+                        <label>QR Code Type</label>
+                        <select id="qrType" onchange="updateQRInputs()">
+                            <option value="text">Text/URL</option>
+                            <option value="wifi">WiFi</option>
+                            <option value="contact">Contact (vCard)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="qrInputs">
+                    <div class="control-group">
+                        <label>Enter Text or URL</label>
+                        <input type="text" id="qrText" placeholder="https://mmcreatives.com">
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>QR Size (px)</label>
+                        <input type="number" id="qrSize" value="256" min="128" max="1024" step="64">
+                    </div>
+                    <div class="control-group">
+                        <label>Color</label>
+                        <input type="color" id="qrColor" value="#000000">
+                    </div>
+                </div>
+
+                <div id="qrOutput" style="text-align: center; margin: 30px 0;"></div>
+
+                <button class="btn-primary" onclick="generateQR()">
+                    📱 Generate QR Code
+                </button>
+            `;
+        }
+
+        function updateQRInputs() {
+            const type = document.getElementById('qrType').value;
+            const inputsDiv = document.getElementById('qrInputs');
+            
+            if (type === 'text') {
+                inputsDiv.innerHTML = `
+                    <div class="control-group">
+                        <label>Enter Text or URL</label>
+                        <input type="text" id="qrText" placeholder="https://mmcreatives.com">
+                    </div>
+                `;
+            } else if (type === 'wifi') {
+                inputsDiv.innerHTML = `
+                    <div class="control-group">
+                        <label>Network Name (SSID)</label>
+                        <input type="text" id="wifiSSID" placeholder="My WiFi">
+                    </div>
+                    <div class="control-group">
+                        <label>Password</label>
+                        <input type="text" id="wifiPassword" placeholder="password123">
+                    </div>
+                    <div class="control-group">
+                        <label>Security Type</label>
+                        <select id="wifiSecurity">
+                            <option value="WPA">WPA/WPA2</option>
+                            <option value="WEP">WEP</option>
+                            <option value="">None</option>
+                        </select>
+                    </div>
+                `;
+            } else if (type === 'contact') {
+                inputsDiv.innerHTML = `
+                    <div class="control-group">
+                        <label>Name</label>
+                        <input type="text" id="contactName" placeholder="Mohamed Mashood">
+                    </div>
+                    <div class="control-group">
+                        <label>Phone</label>
+                        <input type="text" id="contactPhone" placeholder="+91 9876543210">
+                    </div>
+                    <div class="control-group">
+                        <label>Email</label>
+                        <input type="email" id="contactEmail" placeholder="mohamedmashoodt@gmail.com">
+                    </div>
+                `;
+            }
+        }
+
+        function generateQR() {
+            const type = document.getElementById('qrType').value;
+            let qrData = '';
+            
+            if (type === 'text') {
+                qrData = document.getElementById('qrText').value;
+            } else if (type === 'wifi') {
+                const ssid = document.getElementById('wifiSSID').value;
+                const password = document.getElementById('wifiPassword').value;
+                const security = document.getElementById('wifiSecurity').value;
+                qrData = `WIFI:T:${security};S:${ssid};P:${password};;`;
+            } else if (type === 'contact') {
+                const name = document.getElementById('contactName').value;
+                const phone = document.getElementById('contactPhone').value;
+                const email = document.getElementById('contactEmail').value;
+                qrData = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTEL:${phone}\nEMAIL:${email}\nEND:VCARD`;
+            }
+            
+            if (!qrData) {
+                alert('Please enter required information');
+                return;
+            }
+            
+            const size = parseInt(document.getElementById('qrSize').value);
+            const color = document.getElementById('qrColor').value;
+            
+            const outputDiv = document.getElementById('qrOutput');
+            outputDiv.innerHTML = '<div id="qrcode"></div>';
+            
+            new QRCode(document.getElementById('qrcode'), {
+                text: qrData,
+                width: size,
+                height: size,
+                colorDark: color,
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+            
+            // Add download button after generation
+            setTimeout(() => {
+                const qrImage = document.querySelector('#qrcode img');
+                if (qrImage) {
+                    const downloadBtn = document.createElement('button');
+                    downloadBtn.className = 'btn-primary';
+                    downloadBtn.textContent = '💾 Download QR Code';
+                    downloadBtn.style.marginTop = '20px';
+                    downloadBtn.onclick = function() {
+                        const canvas = document.querySelector('#qrcode canvas');
+                        canvas.toBlob(blob => downloadFile(blob, 'qr-code.png'));
+                    };
+                    outputDiv.appendChild(downloadBtn);
+                }
+            }, 500);
+        }
+
+        // ============================================
+        // CANVAS EDITOR
+        // ============================================
+        function createEditorInterface(container) {
+            container.innerHTML = `
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📁</div>
+                    <h3>Drop an image here or click to browse</h3>
+                    <p>Supports: JPG, PNG</p>
+                    <input type="file" id="fileInput" accept="image/*" style="display:none;">
+                </div>
+
+                <div class="filter-buttons" id="editorButtons" style="display:none;">
+                    <button class="filter-btn" onclick="rotateImage(90)">↻ Rotate Right</button>
+                    <button class="filter-btn" onclick="rotateImage(-90)">↺ Rotate Left</button>
+                    <button class="filter-btn" onclick="flipImage('horizontal')">↔️ Flip H</button>
+                    <button class="filter-btn" onclick="flipImage('vertical')">↕️ Flip V</button>
+                </div>
+
+                <canvas id="canvas-preview"></canvas>
+
+                <button class="btn-primary" id="processBtn" onclick="saveEditedImage()" disabled style="display:none;">
+                    💾 Save Edited Image
+                </button>
+            `;
+
+            setupFileUpload();
+        }
+
+        let editorCanvas = null;
+        let editorCtx = null;
+        let editorImage = null;
+        let editorRotation = 0;
+        let editorFlipH = 1;
+        let editorFlipV = 1;
+
+        function loadImageForEditor(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    editorImage = img;
+                    editorCanvas = document.getElementById('canvas-preview');
+                    editorCtx = editorCanvas.getContext('2d');
+                    
+                    editorCanvas.width = img.width;
+                    editorCanvas.height = img.height;
+                    editorCanvas.classList.add('active');
+                    
+                    document.getElementById('editorButtons').style.display = 'flex';
+                    document.getElementById('processBtn').style.display = 'block';
+                    document.getElementById('processBtn').disabled = false;
+                    
+                    renderEditor();
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function renderEditor() {
+            if (!editorImage || !editorCtx) return;
+            
+            editorCtx.clearRect(0, 0, editorCanvas.width, editorCanvas.height);
+            editorCtx.save();
+            
+            editorCtx.translate(editorCanvas.width / 2, editorCanvas.height / 2);
+            editorCtx.rotate(editorRotation * Math.PI / 180);
+            editorCtx.scale(editorFlipH, editorFlipV);
+            editorCtx.drawImage(editorImage, -editorImage.width / 2, -editorImage.height / 2);
+            
+            editorCtx.restore();
+        }
+
+        function rotateImage(degrees) {
+            editorRotation += degrees;
+            renderEditor();
+        }
+
+        function flipImage(direction) {
+            if (direction === 'horizontal') {
+                editorFlipH *= -1;
+            } else {
+                editorFlipV *= -1;
+            }
+            renderEditor();
+        }
+
+        function saveEditedImage() {
+            editorCanvas.toBlob(function(blob) {
+                downloadFile(blob, selectedFiles[0].name.replace(/\.[^/.]+$/, '_edited.jpg'));
+            }, 'image/jpeg', 0.95);
+        }
+
+        // ============================================
+        // METADATA REMOVER
+        // ============================================
+        function createMetadataInterface(container) {
+            container.innerHTML = `
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📁</div>
+                    <h3>Drop images here or click to browse</h3>
+                    <p>Supports: JPG, PNG (Multiple files allowed)</p>
+                    <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
+                </div>
+
+                <div style="background: rgba(239, 68, 68, 0.1); border: 1px solid var(--error); border-radius: 10px; padding: 20px; margin: 20px 0;">
+                    <h3 style="color: var(--error); margin-bottom: 10px;">🔒 Privacy Notice</h3>
+                    <p style="color: var(--text-dim); line-height: 1.6;">
+                        This tool removes EXIF metadata from images, including GPS location, camera info, and timestamps. 
+                        Original images are converted to clean copies without any embedded information.
+                    </p>
+                </div>
+
+                <div class="preview-grid" id="previewGrid"></div>
+
+                <button class="btn-primary" id="processBtn" onclick="processMetadataRemoval()" disabled>
+                    🔒 Remove Metadata
+                </button>
+            `;
+
+            setupFileUpload();
+        }
+
+        async function processMetadataRemoval() {
+            for (const file of selectedFiles) {
+                await removeMetadata(file);
+            }
+        }
+
+        async function removeMetadata(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                        
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0);
+                        
+                        // Canvas export automatically strips EXIF data
+                        canvas.toBlob(function(blob) {
+                            downloadFile(blob, file.name.replace(/\.[^/.]+$/, '_clean.jpg'));
+                            resolve();
+                        }, 'image/jpeg', 0.95);
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ============================================
+        // COLLAGE MAKER
+        // ============================================
+        function createCollageInterface(container) {
+            container.innerHTML = `
+                <div class="drop-zone" id="dropZone">
+                    <div class="drop-zone-icon">📁</div>
+                    <h3>Drop images here or click to browse</h3>
+                    <p>Supports: JPG, PNG (2-9 images for collage)</p>
+                    <input type="file" id="fileInput" accept="image/*" multiple style="display:none;">
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label>Layout</label>
+                        <select id="collageLayout">
+                            <option value="grid">Grid</option>
+                            <option value="horizontal">Horizontal Strip</option>
+                            <option value="vertical">Vertical Strip</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label>Spacing (px)</label>
+                        <input type="number" id="collageSpacing" value="10" min="0" max="50">
+                    </div>
+                    <div class="control-group">
+                        <label>Background Color</label>
+                        <input type="color" id="collageBg" value="#FFFFFF">
+                    </div>
+                </div>
+
+                <div class="preview-grid" id="previewGrid"></div>
+
+                <button class="btn-primary" id="processBtn" onclick="createCollage()" disabled>
+                    🖼️ Create Collage
+                </button>
+            `;
+
+            setupFileUpload();
+        }
+
+        async function createCollage() {
+            const layout = document.getElementById('collageLayout').value;
+            const spacing = parseInt(document.getElementById('collageSpacing').value);
+            const bgColor = document.getElementById('collageBg').value;
+            
+            if (selectedFiles.length < 2) {
+                alert('Please select at least 2 images for collage');
+                return;
+            }
+            
+            const images = await Promise.all(selectedFiles.map(file => loadImageAsync(file)));
+            
+            let canvas, ctx, cols, rows;
+            
+            if (layout === 'grid') {
+                cols = Math.ceil(Math.sqrt(images.length));
+                rows = Math.ceil(images.length / cols);
+            } else if (layout === 'horizontal') {
+                cols = images.length;
+                rows = 1;
+            } else {
+                cols = 1;
+                rows = images.length;
+            }
+            
+            const cellWidth = 400;
+            const cellHeight = 400;
+            
+            canvas = document.createElement('canvas');
+            canvas.width = cols * cellWidth + (cols + 1) * spacing;
+            canvas.height = rows * cellHeight + (rows + 1) * spacing;
+            
+            ctx = canvas.getContext('2d');
+            ctx.fillStyle = bgColor;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            images.forEach((img, index) => {
+                const col = index % cols;
+                const row = Math.floor(index / cols);
+                
+                const x = col * cellWidth + (col + 1) * spacing;
+                const y = row * cellHeight + (row + 1) * spacing;
+                
+                // Scale and center image in cell
+                const scale = Math.max(cellWidth / img.width, cellHeight / img.height);
+                const scaledWidth = img.width * scale;
+                const scaledHeight = img.height * scale;
+                const offsetX = (cellWidth - scaledWidth) / 2;
+                const offsetY = (cellHeight - scaledHeight) / 2;
+                
+                ctx.drawImage(img, x + offsetX, y + offsetY, scaledWidth, scaledHeight);
+            });
+            
+            canvas.toBlob(blob => downloadFile(blob, 'collage.jpg'), 'image/jpeg', 0.95);
+        }
+
+        function loadImageAsync(file) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    img.onload = () => resolve(img);
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        function setupFileUpload() {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const previewGrid = document.getElementById('previewGrid');
+            const processBtn = document.getElementById('processBtn');
+
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('dragover');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('dragover');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('dragover');
+                const files = Array.from(e.dataTransfer.files);
+                handleFiles(files);
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                const files = Array.from(e.target.files);
+                handleFiles(files);
+            });
+
+            function handleFiles(files) {
+                selectedFiles = files;
+                
+                if (previewGrid) {
+                    previewGrid.innerHTML = '';
+                    
+                    files.forEach((file, index) => {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const preview = document.createElement('div');
+                            preview.className = 'preview-item';
+                            
+                            if (file.type.includes('image')) {
+                                preview.innerHTML = `
+                                    <img src="${e.target.result}" alt="${file.name}">
+                                    <div class="filename">${file.name}</div>
+                                    <button class="remove-btn" onclick="removeFile(${index})">×</button>
+                                `;
+                            } else {
+                                preview.innerHTML = `
+                                    <div style="padding: 50px 20px; text-align: center;">
+                                        <div style="font-size: 40px; margin-bottom: 10px;">📄</div>
+                                        <div class="filename">${file.name}</div>
+                                    </div>
+                                    <button class="remove-btn" onclick="removeFile(${index})">×</button>
+                                `;
+                            }
+                            
+                            previewGrid.appendChild(preview);
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                }
+                
+                // Special handling for filter and editor tools
+                if (currentTool === 'filters' && files.length > 0) {
+                    loadImageForFilters(files[0]);
+                } else if (currentTool === 'editor' && files.length > 0) {
+                    loadImageForEditor(files[0]);
+                }
+                
+                if (processBtn) {
+                    processBtn.disabled = files.length === 0;
+                }
+            }
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            document.getElementById('fileInput').value = '';
+            
+            const previewGrid = document.getElementById('previewGrid');
+            if (previewGrid) {
+                previewGrid.children[index].remove();
+            }
+            
+            if (selectedFiles.length === 0) {
+                document.getElementById('processBtn').disabled = true;
+            }
+        }
+
+        function downloadFile(blob, filename) {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function showProgress(show) {
+            const container = document.getElementById('progressContainer');
+            if (container) {
+                container.classList.toggle('active', show);
+            }
+        }
+
+        function updateProgress(percent, text) {
+            const fill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            if (fill) fill.style.width = percent + '%';
+            if (progressText) progressText.textContent = text;
+        }
+    </script>
+</body>
+</html>
